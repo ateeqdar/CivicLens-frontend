@@ -93,7 +93,9 @@ const IssueManagement = () => {
   }, [authLoading]);
 
   const filteredIssues = issues.filter(issue => {
-    const matchesDept = filterDept === 'All' || issue.assigned_authority === filterDept || issue.department === filterDept;
+    const matchesDept = filterDept === 'All' || 
+                          (filterDept.toLowerCase().includes((issue.assigned_authority || '').toLowerCase()) || 
+                           filterDept.toLowerCase().includes((issue.department || '').toLowerCase()));
     const matchesSearch = (issue.title || '').toLowerCase().includes(search.toLowerCase()) || 
                           (issue.description || '').toLowerCase().includes(search.toLowerCase()) ||
                           (String(issue.id) || '').toLowerCase().includes(search.toLowerCase());

@@ -67,7 +67,11 @@ const HeadAuthorityDepartments = () => {
   const departments = (DEPARTMENTS || []);
 
   const getDeptStats = (deptName) => {
-    const deptIssues = issues.filter(i => i.assigned_authority === deptName || i.department === deptName);
+    const lowerDeptName = deptName.toLowerCase();
+    const deptIssues = issues.filter(i => 
+      lowerDeptName.includes((i.assigned_authority || '').toLowerCase()) || 
+      lowerDeptName.includes((i.department || '').toLowerCase())
+    );
     const total = deptIssues.length;
     const resolved = deptIssues.filter(i => (i.status || '').toLowerCase() === ISSUE_STATUS.RESOLVED.toLowerCase()).length;
     const pending = deptIssues.filter(i => (i.status || '').toLowerCase() === ISSUE_STATUS.REPORTED.toLowerCase()).length;

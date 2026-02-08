@@ -34,9 +34,9 @@ const HeadAuthorityDashboard = () => {
       if (authLoading) return;
       try {
         setLoading(true);
-        console.log('HeadAuthorityDashboard: Fetching issues...');
+
         const data = await issueService.getAuthorityIssues();
-        console.log('HeadAuthorityDashboard: Data received:', data);
+
         
         // Normalize data to prevent crashes with null/undefined fields
         const normalizedData = (Array.isArray(data) ? data : []).map(issue => ({
@@ -45,7 +45,7 @@ const HeadAuthorityDashboard = () => {
           assigned_authority: issue?.assigned_authority || issue?.department || 'Unassigned'
         }));
         
-        console.log('HeadAuthorityDashboard: Normalized data:', normalizedData);
+
         setIssues(normalizedData);
         setError('');
       } catch (err) {
@@ -74,7 +74,10 @@ const stats = [
 const deptStats = (Array.isArray(DEPARTMENTS) ? DEPARTMENTS : [])
   .filter(d => d !== 'Head Authority')
   .map(dept => {
-    const deptIssues = safeIssues.filter(i => i.assigned_authority === dept || i.department === dept);
+    const deptIssues = safeIssues.filter(i => 
+      dept.toLowerCase().includes((i.assigned_authority || '').toLowerCase()) || 
+      dept.toLowerCase().includes((i.department || '').toLowerCase())
+    );
     const resolvedIssues = deptIssues.filter(i => (i?.status || '').toUpperCase() === 'RESOLVED');
     return {
       name: dept,
