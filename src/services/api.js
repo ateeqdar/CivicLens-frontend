@@ -60,6 +60,10 @@ export const issueService = {
   deleteIssue: async (id) => {
     const response = await api.delete(`/issues/${id}`);
     return response.data;
+  },
+  bulkDeleteIssues: async (issueIds) => {
+    const response = await api.post('/issues/bulk-delete', { issueIds });
+    return response.data;
   }
 };
 

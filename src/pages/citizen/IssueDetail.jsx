@@ -342,6 +342,22 @@ const IssueDetail = () => {
                       {new Date(issue.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                     </div>
                   </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Report Source</p>
+                    <div className="flex items-center gap-2">
+                      {issue.ai_analysis?.is_manual ? (
+                        <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 text-amber-600 rounded-lg border border-amber-100 text-xs font-black uppercase tracking-widest">
+                          <User className="h-3.5 w-3.5" />
+                          Manual Report
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 px-3 py-1 bg-primary-50 text-primary-600 rounded-lg border border-primary-100 text-xs font-black uppercase tracking-widest">
+                          <Zap className="h-3.5 w-3.5" />
+                          AI Detected
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
                 </div>
 

@@ -10,7 +10,7 @@ import { issueService } from '../services/api';
 import { 
   MapPin, Calendar, CheckCircle2, Clock, 
   AlertCircle, Search, Filter, ArrowUpRight,
-  TrendingUp, Users, Building2, Loader2
+  TrendingUp, Users, Building2, Loader2, User, Zap
 } from 'lucide-react';
 
 const container = {
@@ -40,7 +40,20 @@ const TransparencyWall = () => {
       try {
         setLoading(true);
         const data = await issueService.getAllPublicIssues();
-        setIssues(data || []);
+        
+        // Normalize data for consistency
+        const normalizedData = (data || []).map(issue => ({
+          ...issue,
+          title: issue.title || issue.issue_type || issue.issueType || 'Civic Issue',
+          description: issue.description || '',
+          status: issue.status || ISSUE_STATUS.REPORTED,
+          assigned_authority: issue.assigned_authority || issue.department || 'General',
+          image: issue.image_url || issue.image || 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=1000',
+          created_at: issue.created_at || issue.createdAt || new Date().toISOString(),
+          location_display: issue.location?.address?.split(',')[0] || 'Civic Location'
+        }));
+        
+        setIssues(normalizedData);
       } catch (err) {
         console.error('Transparency wall fetch error:', err);
         setError('Failed to load transparency wall data');
@@ -53,8 +66,19 @@ const TransparencyWall = () => {
 
   const filteredIssues = issues.filter(issue => {
     const matchesFilter = filter === 'ALL' || (issue.status || '').toLowerCase() === filter.toLowerCase();
-    const matchesSearch = (issue.title || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         (issue.description || '').toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const searchFields = [
+      issue.title,
+      issue.description,
+      issue.assigned_authority,
+      issue.location_display,
+      issue.status
+    ];
+
+    const matchesSearch = searchQuery === '' || searchFields.some(field => 
+      (field || '').toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return matchesFilter && matchesSearch;
   });
 
@@ -193,7 +217,7 @@ const TransparencyWall = () => {
                       )}>
                         <div className="relative overflow-hidden group/img">
                           <img 
-                            src={issue.image_url || issue.image} 
+                            src={issue.image} 
                             alt="Before" 
                             className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110"
                           />
@@ -229,16 +253,33 @@ const TransparencyWall = () => {
                     <div className="p-8 flex-1 flex flex-col">
                       <div className="flex items-center justify-between mb-4">
                         <span className="px-3 py-1 rounded-lg bg-primary-50 text-[10px] font-black text-primary-600 uppercase tracking-widest border border-primary-100">
-                          {issue.assigned_authority || issue.department}
+                          {issue.assigned_authority}
                         </span>
+                        <div className="flex flex-col items-end gap-2">
+                          <Badge variant={getStatusVariant(issue.status)} className="px-3 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest shadow-sm">
+                            {formatStatus(issue.status)}
+                          </Badge>
+                          <div className={cn(
+                            "flex items-center gap-1 px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border",
+                            issue.ai_analysis?.is_manual 
+                              ? "bg-amber-50 text-amber-600 border-amber-100" 
+                              : "bg-primary-50 text-primary-600 border-primary-100"
+                          )}>
+                            {issue.ai_analysis?.is_manual ? (
+                              <><User className="h-2.5 w-2.5" /> Manual Report</>
+                            ) : (
+                              <><Zap className="h-2.5 w-2.5" /> AI Detected</>
+                            )}
+                          </div>
+                        </div>
                         <div className="flex items-center text-slate-400 text-xs font-bold">
                           <Calendar className="h-3.5 w-3.5 mr-1.5" />
-                          {new Date(issue.created_at || issue.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                          {new Date(issue.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                         </div>
                       </div>
                       
                       <h3 className="text-2xl font-black text-slate-900 mb-3 line-clamp-1 tracking-tight group-hover:text-primary-600 transition-colors">
-                        {issue.title || issue.issue_type}
+                        {issue.title}
                       </h3>
                       
                       <p className="text-slate-500 font-medium text-sm mb-6 line-clamp-2 leading-relaxed">
@@ -255,7 +296,7 @@ const TransparencyWall = () => {
                       <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
                         <div className="flex items-center text-slate-500 text-sm font-bold">
                           <MapPin className="h-4 w-4 mr-2 text-primary-400" />
-                          <span className="truncate max-w-[150px]">{issue.location?.address?.split(',')[0] || 'Civic Location'}</span>
+                          <span className="truncate max-w-[150px]">{issue.location_display}</span>
                         </div>
                         <Link 
                           to={`/issues/${issue.id}`}

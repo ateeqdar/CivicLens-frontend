@@ -12,7 +12,7 @@ import {
   MapPin, Calendar, ArrowRight, Search, 
   Filter, Clock, CheckCircle2, AlertCircle,
   ChevronDown, ArrowLeft, MessageSquare,
-  Sparkles, ArrowUpRight, Loader2
+  Sparkles, ArrowUpRight, Loader2, User, Zap
 } from 'lucide-react';
 
 const container = {
@@ -200,12 +200,23 @@ const MyIssues = () => {
                           <h3 className="text-3xl font-black text-slate-900 tracking-tight group-hover:text-primary-600 transition-colors">
                             {issue.issue_type || 'Civic Issue'}
                           </h3>
-                          <div className="flex flex-col items-end gap-2">
+                          <div className="flex flex-col items-end gap-3">
                             <Badge variant={getStatusVariant(issue.status)} className="w-fit flex items-center gap-2 px-5 py-2 rounded-full font-black text-xs uppercase tracking-widest shadow-lg shadow-current/5">
                               {getStatusIcon(issue.status)}
                               {formatStatus(issue.status) || 'Reported'}
                             </Badge>
-
+                            <div className={cn(
+                              "flex items-center gap-1.5 px-3 py-1 rounded-xl font-black text-[10px] uppercase tracking-wider border transition-all",
+                              issue.ai_analysis?.is_manual 
+                                ? "bg-amber-50 text-amber-600 border-amber-100 shadow-sm shadow-amber-100/50" 
+                                : "bg-primary-50 text-primary-600 border-primary-100 shadow-sm shadow-primary-100/50"
+                            )}>
+                              {issue.ai_analysis?.is_manual ? (
+                                <><User className="h-3 w-3" /> Manual Report</>
+                              ) : (
+                                <><Zap className="h-3 w-3" /> AI Detected</>
+                              )}
+                            </div>
                           </div>
                         </div>
                         

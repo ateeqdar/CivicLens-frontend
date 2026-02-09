@@ -6,9 +6,10 @@ import {
   Camera, MapPin, Upload, X, Loader2, CheckCircle2, 
   AlertCircle, ChevronDown, ArrowLeft, Sparkles, 
   Settings2, Lightbulb, Trash2, Droplets, Zap, ShieldAlert,
-  Navigation
+  Navigation, Maximize2, User
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { cn } from '../../utils/cn';
 import { issueService } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import Badge from '../../components/Badge';
@@ -38,6 +39,7 @@ const ReportIssue = () => {
   const [error, setError] = useState('');
 
   const [manualIssueType, setManualIssueType] = useState('');
+  const [isMapFull, setIsMapFull] = useState(false);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -140,19 +142,21 @@ const ReportIssue = () => {
         location_lng: location.lng,
         manual_department: isManualSelection ? selectedDepartment : null,
         manual_issue_type: isManualSelection ? manualIssueType : null,
-
+        is_manual_submission: isManualSelection // Explicit flag
       };
       
       console.log('Sending Payload to Backend:', JSON.stringify(payload, null, 2));
 
       const result = await issueService.createIssue(payload);
       
-      console.log('Backend Response:', JSON.stringify(result, null, 2));
+      console.log('Backend Response Full:', result);
 
       setAiResult({
         issueType: result.issue_type,
         assignedDepartment: result.department || result.assigned_authority,
-        status: result.status
+        status: result.status,
+        isManual: result.ai_analysis?.is_manual || isManualSelection, // Fallback to local state if server is ambiguous
+        confidence: result.ai_analysis?.confidence
       });
       setShowResult(true);
     } catch (err) {
@@ -218,14 +222,25 @@ const ReportIssue = () => {
               <div className="space-y-4">
                 <div className="group flex justify-between items-center p-6 bg-slate-50 rounded-3xl border border-transparent hover:border-slate-200 transition-all">
                   <div>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Detected Issue</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                      {aiResult?.isManual ? "Reported Issue" : "Detected Issue"}
+                    </p>
                     <p className="text-xl font-black text-slate-900">{aiResult?.issueType}</p>
                   </div>
                   
                   <div className="flex flex-col items-end gap-2">
-                    <Badge variant="primary" className="text-sm py-1.5 px-4 rounded-xl shadow-sm">
-                      {aiResult?.aiConfidence === "N/A" ? "Manual Selection" : "AI Classified"}
-                    </Badge>
+                    <div className={cn(
+                      "flex items-center gap-2 px-4 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider border shadow-sm transition-all",
+                      aiResult?.isManual 
+                        ? "bg-amber-50 text-amber-600 border-amber-100 shadow-amber-100/50" 
+                        : "bg-primary-50 text-primary-600 border-primary-100 shadow-primary-100/50"
+                    )}>
+                      {aiResult?.isManual ? (
+                        <><User className="h-3.5 w-3.5" /> Manual Report</>
+                      ) : (
+                        <><Zap className="h-3.5 w-3.5" /> AI Detected</>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -235,24 +250,31 @@ const ReportIssue = () => {
                       {DEPARTMENT_ICONS[aiResult?.assignedDepartment] || <Settings2 className="h-5 w-5 text-slate-400" />}
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Assigned Department</p>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                        {aiResult?.isManual ? "Selected Department" : "Assigned Department"}
+                      </p>
                       <p className="text-xl font-black text-slate-900">{aiResult?.assignedDepartment}</p>
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    <Badge variant="info" className="text-xs py-1 px-3 rounded-lg uppercase font-black">
-                      {aiResult?.aiConfidence === "N/A" ? "USER ASSIGNED" : "SYSTEM VERIFIED"}
-                    </Badge>
-                    <button 
-                      onClick={() => {
-                        setShowResult(false);
-                        setIsManualSelection(true);
-                        setSelectedDepartment(aiResult?.assignedDepartment);
-                      }}
-                      className="text-xs font-bold text-primary-600 hover:text-primary-700 underline underline-offset-4 decoration-2"
-                    >
-                      Wrong Category?
-                    </button>
+                    <div className={cn(
+                      "flex items-center gap-1.5 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
+                      aiResult?.isManual ? "bg-amber-50 text-amber-600 border-amber-100" : "bg-blue-50 text-blue-600 border-blue-100"
+                    )}>
+                      {aiResult?.isManual ? "USER ASSIGNED" : "SYSTEM VERIFIED"}
+                    </div>
+                    {!aiResult?.isManual && (
+                      <button 
+                        onClick={() => {
+                          setShowResult(false);
+                          setIsManualSelection(true);
+                          setSelectedDepartment(aiResult?.assignedDepartment);
+                        }}
+                        className="text-[10px] font-bold text-primary-600 hover:text-primary-700 underline underline-offset-4 decoration-2"
+                      >
+                        Wrong Category?
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -516,6 +538,15 @@ const ReportIssue = () => {
                         <LocationMap lat={location.lat} lng={location.lng} />
                       </div>
                       
+                      <button 
+                        type="button"
+                        onClick={() => setIsMapFull(true)}
+                        className="absolute top-4 right-4 z-30 bg-white/90 backdrop-blur-md p-3 rounded-2xl shadow-xl border border-white/20 hover:bg-white transition-all group"
+                        title="View Full Map"
+                      >
+                        <Maximize2 className="h-5 w-5 text-slate-700 group-hover:scale-110 transition-transform" />
+                      </button>
+                      
                       {/* Overlay Info */}
                       <div className="absolute bottom-6 left-6 right-6 z-10">
                         <div className="bg-slate-900/80 backdrop-blur-md p-6 rounded-3xl border border-white/10 flex items-center gap-5">
@@ -561,6 +592,77 @@ const ReportIssue = () => {
             )}
           </motion.button>
         </form>
+
+        {/* Full Map Modal */}
+        <AnimatePresence>
+          {isMapFull && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] bg-slate-900/90 backdrop-blur-xl p-4 md:p-10 flex items-center justify-center"
+            >
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="bg-white w-full max-w-6xl h-[80vh] rounded-[3rem] overflow-hidden relative shadow-2xl flex flex-col"
+              >
+                {/* Modal Header */}
+                <div className="p-6 md:p-8 border-b border-slate-100 flex items-center justify-between bg-white z-10">
+                  <div>
+                    <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                      <div className="bg-primary-100 p-2 rounded-xl">
+                        <MapPin className="h-6 w-6 text-primary-600" />
+                      </div>
+                      Full Location View
+                    </h2>
+                    <p className="text-slate-500 font-medium ml-12">Precise coordinates: {location.lat.toFixed(6)}°, {location.lng.toFixed(6)}°</p>
+                  </div>
+                  <button 
+                    onClick={() => setIsMapFull(false)}
+                    className="p-4 bg-slate-100 rounded-2xl hover:bg-slate-200 transition-all group"
+                  >
+                    <X className="h-6 w-6 text-slate-600 group-hover:rotate-90 transition-transform" />
+                  </button>
+                </div>
+
+                {/* Modal Map */}
+                <div className="flex-1 relative">
+                  <LocationMap 
+                    lat={location.lat} 
+                    lng={location.lng} 
+                    interactive={true} 
+                    className="h-full w-full"
+                  />
+                  
+                  {/* Floating Location Tag */}
+                  <div className="absolute bottom-10 left-10 z-20">
+                    <div className="bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl border border-white/10 shadow-2xl">
+                      <div className="flex items-center gap-4">
+                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(34,197,94,0.6)]"></div>
+                        <div>
+                          <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest">System Status</p>
+                          <p className="text-white font-black">Live Tracking Active</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Footer */}
+                <div className="p-8 bg-slate-50 border-t border-slate-100 flex justify-end">
+                  <button 
+                    onClick={() => setIsMapFull(false)}
+                    className="px-10 py-4 bg-slate-900 text-white rounded-2xl font-black hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
+                  >
+                    Close Preview
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </DashboardLayout>
   );

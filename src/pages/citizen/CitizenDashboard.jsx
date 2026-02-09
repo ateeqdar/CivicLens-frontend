@@ -18,6 +18,8 @@ import {
   MapPin,
   Calendar,
   MessageSquare,
+  Zap,
+  User,
   Loader2
 } from 'lucide-react';
 
@@ -216,6 +218,16 @@ const CitizenDashboard = () => {
                               <Calendar className="h-4 w-4 text-primary-400" />
                               {issue.date_display}
                             </span>
+                            <div className={cn(
+                              "flex items-center gap-1 px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border",
+                              issue.ai_analysis?.is_manual ? "bg-amber-50 text-amber-600 border-amber-100" : "bg-primary-50 text-primary-600 border-primary-100"
+                            )}>
+                              {issue.ai_analysis?.is_manual ? (
+                                <><User className="h-2.5 w-2.5" /> Manual Report</>
+                              ) : (
+                                <><Zap className="h-2.5 w-2.5" /> AI Detected</>
+                              )}
+                            </div>
                             {(issue.status || '').toLowerCase() === ISSUE_STATUS.RESOLVED.toLowerCase() && issue.resolved_at && (
                               <span className="flex items-center gap-2 text-sm text-emerald-600 font-bold">
                                 <CheckCircle2 className="h-4 w-4" />

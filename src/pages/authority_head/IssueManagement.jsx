@@ -24,6 +24,7 @@ import {
   ChevronRight,
   ExternalLink,
   Zap,
+  User,
   Loader2,
   Camera,
   Upload,
@@ -55,13 +56,33 @@ const IssueManagement = () => {
   const [error, setError] = useState('');
   const [filterDept, setFilterDept] = useState(searchParams.get('dept') || 'All');
   const [search, setSearch] = useState('');
-  const [viewMode, setViewMode] = useState('detailed'); // 'table', 'grid', or 'detailed'
+  const [viewMode, setViewMode] = useState('detailed'); // 'table' or 'detailed'
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
   const [selectedIssueId, setSelectedIssueId] = useState(null);
   const [proofImage, setProofImage] = useState(null);
   const [isUploadingProof, setIsUploadingProof] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [issueToDeleteId, setIssueToDeleteId] = useState(null);
+  const [selectedIssues, setSelectedIssues] = useState([]); // New state for selected issues
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false); // New state for bulk delete confirmation
+
+  const toggleIssueSelection = (issueId) => {
+    setSelectedIssues(prevSelected => {
+      const newSelected = prevSelected.includes(issueId)
+        ? prevSelected.filter(id => id !== issueId)
+        : [...prevSelected, issueId];
+      return newSelected;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIssues(prevSelected => {
+      const newSelected = prevSelected.length === filteredIssues.length && filteredIssues.length > 0
+        ? []
+        : filteredIssues.map(issue => issue.id);
+      return newSelected;
+    });
+  };
   
   useEffect(() => {
     const fetchIssues = async () => {
@@ -170,7 +191,7 @@ const IssueManagement = () => {
     }
   };
 
-  const handleDeleteIssue = async () => {
+  const handleSingleDeleteIssue = async () => {
     if (!issueToDeleteId) return;
 
     try {
@@ -186,6 +207,25 @@ const IssueManagement = () => {
     }
   };
 
+  const handleBulkDelete = async () => {
+    if (selectedIssues.length === 0) {
+      console.log('No issues selected for bulk delete.');
+      return;
+    }
+
+    try {
+      await issueService.bulkDeleteIssues(selectedIssues);
+      setIssues(prevIssues => prevIssues.filter(issue => !selectedIssues.includes(issue.id)));
+      setSelectedIssues([]);
+      alert(`${selectedIssues.length} issues deleted successfully!`);
+    } catch (err) {
+      console.error('Bulk delete error:', err);
+      alert('Failed to delete selected issues. Please try again.');
+    } finally {
+      setShowBulkDeleteConfirm(false);
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -193,6 +233,7 @@ const IssueManagement = () => {
           <Loader2 className="h-12 w-12 text-primary-600 animate-spin mb-4" />
           <p className="text-slate-500 font-bold">Synchronizing global issue data...</p>
         </div>
+
       </DashboardLayout>
     );
   }
@@ -269,6 +310,29 @@ const IssueManagement = () => {
                 <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 rotate-90 pointer-events-none" />
               </div>
 
+              {filteredIssues.length > 0 && (
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 text-primary-600 rounded-md border-slate-300 focus:ring-primary-500"
+                      checked={selectedIssues.length === filteredIssues.length && filteredIssues.length > 0}
+                      onChange={toggleSelectAll}
+                    />
+                    Select All
+                  </label>
+                  <button
+                    onClick={() => {
+                      setShowBulkDeleteConfirm(true);
+                    }}
+                    disabled={selectedIssues.length === 0}
+                    className="px-5 py-2.5 bg-rose-500 text-white rounded-[1.25rem] font-black text-sm uppercase tracking-widest shadow-lg hover:bg-rose-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Delete Selected ({selectedIssues.length})
+                  </button>
+                </div>
+              )}
+
               <div className="h-10 w-px bg-slate-100 mx-2 hidden lg:block" />
 
               <div className="flex bg-slate-50 p-1.5 rounded-[1.25rem]">
@@ -278,13 +342,6 @@ const IssueManagement = () => {
                   title="Detailed View"
                 >
                   <LayoutGrid className="h-5 w-5" />
-                </button>
-                <button 
-                  onClick={() => setViewMode('grid')}
-                  className={cn("p-3 rounded-xl transition-all", viewMode === 'grid' ? "bg-white text-primary-600 shadow-md" : "text-slate-400 hover:text-slate-600")}
-                  title="Grid View"
-                >
-                  <LayoutGrid className="h-5 w-5 rotate-45" />
                 </button>
                 <button 
                   onClick={() => setViewMode('table')}
@@ -353,6 +410,12 @@ const IssueManagement = () => {
                         
                         <div className="absolute top-20 left-8 flex flex-col gap-3 z-10">
                           <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-lg border border-white/50 flex items-center gap-3">
+                            <input
+                              type="checkbox"
+                              className="form-checkbox h-4 w-4 text-primary-600 rounded border-slate-300"
+                              checked={selectedIssues.includes(issue.id)}
+                              onChange={() => toggleIssueSelection(issue.id)}
+                            />
                             <span className="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
                             <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">#{issue.id.slice(-8)}</span>
                           </div>
@@ -396,6 +459,16 @@ const IssueManagement = () => {
                               issue.priority === 'high' ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-slate-50 text-slate-500 border border-slate-100'
                             )}>
                               {issue.priority} Priority
+                            </div>
+                            <div className={cn(
+                              "px-5 py-2.5 rounded-2xl font-black text-[11px] uppercase tracking-widest flex items-center gap-2",
+                              issue.ai_analysis?.is_manual ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-primary-50 text-primary-600 border border-primary-100"
+                            )}>
+                              {issue.ai_analysis?.is_manual ? (
+                                <><User className="h-3.5 w-3.5" /> Manual Report</>
+                              ) : (
+                                <><Zap className="h-3.5 w-3.5" /> AI Detected</>
+                              )}
                             </div>
                           </div>
                           <div className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
@@ -480,6 +553,15 @@ const IssueManagement = () => {
                       variants={item}
                       className="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden flex flex-col transition-all duration-300 hover:shadow-primary-100 hover:scale-[1.02]"
                     >
+                      <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white px-3 py-1 rounded-lg font-black text-[8px] uppercase tracking-widest border border-white/10 z-10">
+                        <input
+                          type="checkbox"
+                          className="form-checkbox h-3 w-3 text-primary-600 rounded border-slate-300 mr-1"
+                          checked={selectedIssues.includes(issue.id)}
+                          onChange={() => toggleIssueSelection(issue.id)}
+                        />
+                        #{issue.id.slice(-8)}
+                      </div>
                       <Link to={`/authority/issue/${issue.id}`} className="block">
                         <div className="relative h-48 w-full overflow-hidden">
                           <img 
@@ -487,9 +569,6 @@ const IssueManagement = () => {
                             alt={issue.title} 
                             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
                           />
-                          <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md text-white px-3 py-1 rounded-lg font-black text-[8px] uppercase tracking-widest border border-white/10">
-                            #{issue.id.slice(-8)}
-                          </div>
                           <Badge 
                             variant={issue.status?.toLowerCase() === ISSUE_STATUS.RESOLVED ? 'success' : 'primary'} 
                             className="absolute bottom-4 right-4 px-3 py-1.5 rounded-xl font-black text-[9px] uppercase tracking-[0.1em] shadow-lg backdrop-blur-md"
@@ -507,6 +586,16 @@ const IssueManagement = () => {
                               issue.priority === 'high' ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-slate-50 text-slate-500 border border-slate-100'
                             )}>
                               {issue.priority} Priority
+                            </div>
+                            <div className={cn(
+                              "px-3 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest flex items-center gap-1.5",
+                              issue.ai_analysis?.is_manual ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-primary-50 text-primary-600 border border-primary-100"
+                            )}>
+                              {issue.ai_analysis?.is_manual ? (
+                                <><User className="h-3 w-3" /> Manual Report</>
+                              ) : (
+                                <><Zap className="h-3 w-3" /> AI Detected</>
+                              )}
                             </div>
                           </div>
                           <h3 className="text-xl font-black text-slate-900 mb-2 leading-tight">
@@ -530,7 +619,15 @@ const IssueManagement = () => {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="bg-slate-50/50">
-                          <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Report & ID</th>
+                          <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            <input
+                              type="checkbox"
+                              className="form-checkbox h-4 w-4 text-primary-600 rounded border-slate-300 mr-2"
+                              checked={selectedIssues.length === filteredIssues.length && filteredIssues.length > 0}
+                              onChange={toggleSelectAll}
+                            />
+                            Report & ID
+                          </th>
                           <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Assignment</th>
                           <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Status</th>
                           <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Actions</th>
@@ -545,6 +642,12 @@ const IssueManagement = () => {
                           >
                             <td className="px-8 py-6">
                               <div className="flex items-center gap-5">
+                                <input
+                                  type="checkbox"
+                                  className="form-checkbox h-4 w-4 text-primary-600 rounded border-slate-300"
+                                  checked={selectedIssues.includes(issue.id)}
+                                  onChange={() => toggleIssueSelection(issue.id)}
+                                />
                                 <div className="relative shrink-0">
                                   <AnimatePresence mode="wait">
                                     {issue.status?.toLowerCase() === ISSUE_STATUS.RESOLVED && issue.resolved_image_url ? (
@@ -577,6 +680,16 @@ const IssueManagement = () => {
                                     <span className="flex items-center gap-1.5">
                                       <MapPin className="h-3.5 w-3.5 text-primary-400" />
                                       {issue.location?.address?.split(',')[0] || 'Unknown Location'}
+                                    </span>
+                                    <span className={cn(
+                                      "flex items-center gap-1 px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest border",
+                                      issue.ai_analysis?.is_manual ? "bg-amber-50 text-amber-600 border-amber-100" : "bg-primary-50 text-primary-600 border-primary-100"
+                                    )}>
+                                      {issue.ai_analysis?.is_manual ? (
+                                        <><User className="h-2.5 w-2.5" /> Manual Report</>
+                                      ) : (
+                                        <><Zap className="h-2.5 w-2.5" /> AI Detected</>
+                                      )}
                                     </span>
                                   </div>
                                 </div>
@@ -904,7 +1017,7 @@ const IssueManagement = () => {
                     Cancel
                   </button>
                   <button
-                    onClick={handleDeleteIssue}
+                    onClick={handleSingleDeleteIssue}
                     className="px-6 py-3 bg-rose-500 text-white rounded-xl font-bold hover:bg-rose-600 transition-colors"
                   >
                     Delete
@@ -915,6 +1028,44 @@ const IssueManagement = () => {
           )}
         </AnimatePresence>
       </motion.div>
+      {/* Bulk Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showBulkDeleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-white rounded-3xl p-8 shadow-xl max-w-md w-full text-center"
+            >
+              <ShieldAlert className="h-16 w-16 text-rose-500 mx-auto mb-6" />
+              <h3 className="text-3xl font-bold text-slate-900 mb-4">Confirm Bulk Deletion</h3>
+              <p className="text-slate-500 mb-8">
+                Are you sure you want to delete {selectedIssues.length} selected issues? This action cannot be undone.
+              </p>
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={() => setShowBulkDeleteConfirm(false)}
+                  className="px-6 py-3 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleBulkDelete}
+                  className="px-6 py-3 rounded-xl bg-rose-500 text-white font-semibold hover:bg-rose-600 transition-colors"
+                >
+                  Delete {selectedIssues.length} Issues
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </DashboardLayout>
   );
 };

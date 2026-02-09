@@ -78,7 +78,10 @@ const HeadAuthorityDepartments = () => {
     const inProgress = deptIssues.filter(i => (i.status || '').toLowerCase() === ISSUE_STATUS.IN_PROGRESS.toLowerCase()).length;
     const efficiency = total > 0 ? Math.round((resolved / total) * 100) : 0;
     
-    return { total, resolved, pending, inProgress, efficiency };
+    const manualReported = deptIssues.filter(i => i.ai_analysis?.is_manual).length;
+    const aiDetected = total - manualReported;
+    
+    return { total, resolved, pending, inProgress, efficiency, manualReported, aiDetected };
   };
 
   if (loading) {
