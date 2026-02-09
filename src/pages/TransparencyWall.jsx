@@ -210,7 +210,7 @@ const TransparencyWall = () => {
                     exit={{ opacity: 0, scale: 0.9 }}
                     className="group bg-white rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col"
                   >
-                    <div className="relative h-64 overflow-hidden">
+                    <Link to={`/issues/${issue.id}`} className="relative h-64 overflow-hidden block">
                       <div className={cn(
                         "h-full grid gap-0.5",
                         issue.status?.toLowerCase() === ISSUE_STATUS.RESOLVED && issue.resolved_image_url ? "grid-cols-2" : "grid-cols-1"
@@ -234,7 +234,7 @@ const TransparencyWall = () => {
                               className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110"
                             />
                             <div className="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-lg font-black text-[8px] uppercase tracking-widest shadow-lg flex items-center gap-1.5 z-10">
-                              <CheckCircle2 className="h-3 w-3" />
+                              <CheckCircle2 className="h-3.5 w-3.5" />
                               After
                             </div>
                           </div>
@@ -248,7 +248,7 @@ const TransparencyWall = () => {
                           {formatStatus(issue.status)}
                         </Badge>
                       </div>
-                    </div>
+                    </Link>
                     
                     <div className="p-8 flex-1 flex flex-col">
                       <div className="flex items-center justify-between mb-4">
@@ -278,9 +278,11 @@ const TransparencyWall = () => {
                         </div>
                       </div>
                       
-                      <h3 className="text-2xl font-black text-slate-900 mb-3 line-clamp-1 tracking-tight group-hover:text-primary-600 transition-colors">
-                        {issue.title}
-                      </h3>
+                      <Link to={`/issues/${issue.id}`}>
+                        <h3 className="text-2xl font-black text-slate-900 mb-3 line-clamp-1 tracking-tight group-hover:text-primary-600 transition-colors">
+                          {issue.title}
+                        </h3>
+                      </Link>
                       
                       <p className="text-slate-500 font-medium text-sm mb-6 line-clamp-2 leading-relaxed">
                         {issue.description}

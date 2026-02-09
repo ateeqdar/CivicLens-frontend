@@ -20,6 +20,7 @@ const LandingPage = lazy(() => import('./pages/LandingPage'));
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const SignupPage = lazy(() => import('./pages/auth/SignupPage'));
 const TransparencyWall = lazy(() => import('./pages/TransparencyWall'));
+const PublicIssueDetail = lazy(() => import('./pages/PublicIssueDetail'));
 
 // Citizen Pages
 const CitizenDashboard = lazy(() => import('./pages/citizen/CitizenDashboard'));
@@ -47,6 +48,7 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/transparency-wall" element={<TransparencyWall />} />
+                <Route path="/issues/:id" element={<PublicIssueDetail />} />
 
                 {/* Citizen Routes */}
                 <Route
