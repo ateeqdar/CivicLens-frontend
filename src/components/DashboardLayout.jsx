@@ -21,7 +21,7 @@ const DashboardLayout = ({ children }) => {
         <Sidebar role={user?.role} />
         
         <main className="flex-1 md:pl-72 min-h-screen transition-all duration-300">
-          <div className="pt-28 pb-12 px-4 md:px-10">
+          <div className="pt-24 md:pt-28 pb-12 px-4 md:px-10">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -35,10 +35,10 @@ const DashboardLayout = ({ children }) => {
       </div>
 
       {/* Footer / Status Bar - Optional but adds polish */}
-      <footer className="md:pl-72 py-6 px-10 border-t border-slate-100 bg-white/50 backdrop-blur-sm relative z-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-xs font-bold uppercase tracking-widest">
+      <footer className="md:pl-72 py-8 md:py-6 px-6 md:px-10 border-t border-slate-100 bg-white/50 backdrop-blur-sm relative z-10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 md:gap-4 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest text-center md:text-left">
           <p>© 2026 CivicLens Infrastructure. All rights reserved.</p>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
             <a href="#" className="hover:text-primary-600 transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-primary-600 transition-colors">Terms of Service</a>
             <div className="flex items-center gap-2">

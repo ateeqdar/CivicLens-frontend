@@ -309,37 +309,39 @@ const ReportIssue = () => {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto pb-20">
         {/* Header */}
-        <div className="flex items-center justify-between mb-10">
-          <div className="flex items-center gap-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+          <div className="flex items-center gap-4 md:gap-6">
             <button 
               onClick={() => navigate(-1)}
-              className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group"
+              className="p-3 md:p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group"
             >
-              <ArrowLeft className="h-6 w-6 text-slate-600 group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft className="h-5 w-5 md:h-6 md:w-6 text-slate-600 group-hover:-translate-x-1 transition-transform" />
             </button>
             <div>
-              <h1 className="text-4xl font-black text-slate-900 tracking-tight">Report Issue</h1>
-              <p className="text-slate-500 font-medium mt-1">Smart civic reporting for a better city.</p>
+              <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Report Issue</h1>
+              <p className="text-sm md:text-base text-slate-500 font-medium mt-1">Smart civic reporting for a better city.</p>
             </div>
           </div>
-          {!isManualSelection && (
-            <div className="hidden md:flex items-center gap-2 bg-primary-50 px-4 py-2 rounded-2xl border border-primary-100">
-              <Sparkles className="h-4 w-4 text-primary-600" />
-              <span className="text-xs font-black text-primary-700 uppercase tracking-wider">Smart Analysis Active</span>
-            </div>
-          )}
-          <button
-            type="button"
-            onClick={() => setIsManualSelection(!isManualSelection)}
-            className={`flex items-center gap-2 px-6 py-2 rounded-2xl border-2 transition-all font-black text-xs uppercase tracking-widest ${
-              isManualSelection 
-                ? 'bg-amber-50 border-amber-200 text-amber-700 shadow-lg shadow-amber-100' 
-                : 'bg-white border-slate-100 text-slate-500 hover:border-slate-200'
-            }`}
-          >
-            <Settings2 className="h-4 w-4" />
-            {isManualSelection ? 'Manual Mode' : 'Switch to Manual'}
-          </button>
+          <div className="flex items-center gap-3">
+            {!isManualSelection && (
+              <div className="hidden md:flex items-center gap-2 bg-primary-50 px-4 py-2 rounded-2xl border border-primary-100">
+                <Sparkles className="h-4 w-4 text-primary-600" />
+                <span className="text-xs font-black text-primary-700 uppercase tracking-wider">Smart Analysis Active</span>
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => setIsManualSelection(!isManualSelection)}
+              className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 md:py-2 rounded-2xl border-2 transition-all font-black text-[10px] md:text-xs uppercase tracking-widest ${
+                isManualSelection 
+                  ? 'bg-amber-50 border-amber-200 text-amber-700 shadow-lg shadow-amber-100' 
+                  : 'bg-white border-slate-100 text-slate-500 hover:border-slate-200'
+              }`}
+            >
+              <Settings2 className="h-4 w-4" />
+              {isManualSelection ? 'Manual Mode' : 'Switch to Manual'}
+            </button>
+          </div>
         </div>
 
         <AnimatePresence mode="wait">
@@ -373,21 +375,21 @@ const ReportIssue = () => {
             </div>
           )}
           {/* Mode Selector */}
-          <div className="bg-slate-100/50 p-2 rounded-[1.5rem] flex gap-2">
+          <div className="bg-slate-100/50 p-1.5 md:p-2 rounded-[1.25rem] md:rounded-[1.5rem] flex gap-2">
             <button
               type="button"
               onClick={() => setIsManualSelection(false)}
-              className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-[1.25rem] font-black transition-all ${!isManualSelection ? 'bg-white shadow-lg shadow-slate-200 text-primary-600 scale-[1.02]' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex-1 flex items-center justify-center gap-2 md:gap-3 py-3 md:py-4 rounded-xl md:rounded-[1.25rem] font-black text-[10px] md:text-xs tracking-widest transition-all ${!isManualSelection ? 'bg-white shadow-lg shadow-slate-200 text-primary-600 scale-[1.02]' : 'text-slate-500 hover:text-slate-700'}`}
             >
-              <Sparkles className={`h-5 w-5 ${!isManualSelection ? 'fill-primary-600' : ''}`} />
+              <Sparkles className={`h-4 w-4 md:h-5 md:w-5 ${!isManualSelection ? 'fill-primary-600' : ''}`} />
               SMART DETECTION
             </button>
             <button
               type="button"
               onClick={() => setIsManualSelection(true)}
-              className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-[1.25rem] font-black transition-all ${isManualSelection ? 'bg-white shadow-lg shadow-slate-200 text-amber-600 scale-[1.02]' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`flex-1 flex items-center justify-center gap-2 md:gap-3 py-3 md:py-4 rounded-xl md:rounded-[1.25rem] font-black text-[10px] md:text-xs tracking-widest transition-all ${isManualSelection ? 'bg-white shadow-lg shadow-slate-200 text-amber-600 scale-[1.02]' : 'text-slate-500 hover:text-slate-700'}`}
             >
-              <Settings2 className="h-5 w-5" />
+              <Settings2 className="h-4 w-4 md:h-5 md:w-5" />
               MANUAL SELECT
             </button>
           </div>
@@ -400,12 +402,12 @@ const ReportIssue = () => {
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden"
               >
-                <div className="bg-white p-10 rounded-[2.5rem] border-2 border-slate-100 shadow-xl shadow-slate-100 space-y-6">
+                <div className="bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border-2 border-slate-100 shadow-xl shadow-slate-100 space-y-6">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="bg-amber-100 p-2 rounded-lg">
-                      <Lightbulb className="h-5 w-5 text-amber-600" />
+                      <Lightbulb className="h-4 w-4 md:h-5 md:w-5 text-amber-600" />
                     </div>
-                    <h2 className="text-xl font-black text-slate-900">Select Department</h2>
+                    <h2 className="text-lg md:text-xl font-black text-slate-900">Select Department</h2>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -414,12 +416,12 @@ const ReportIssue = () => {
                         key={dept}
                         type="button"
                         onClick={() => setSelectedDepartment(dept)}
-                        className={`flex items-center gap-4 p-5 rounded-2xl border-2 transition-all text-left ${selectedDepartment === dept ? 'border-primary-500 bg-primary-50/50 ring-4 ring-primary-50' : 'border-slate-100 hover:border-slate-200 hover:bg-slate-50'}`}
+                        className={`flex items-center gap-4 p-4 md:p-5 rounded-2xl border-2 transition-all text-left ${selectedDepartment === dept ? 'border-primary-500 bg-primary-50/50 ring-4 ring-primary-50' : 'border-slate-100 hover:border-slate-200 hover:bg-slate-50'}`}
                       >
-                        <div className={`p-3 rounded-xl ${selectedDepartment === dept ? 'bg-primary-500 text-white shadow-lg shadow-primary-200' : 'bg-slate-100 text-slate-400'}`}>
-                          {DEPARTMENT_ICONS[dept] || <Settings2 className="h-5 w-5" />}
+                        <div className={`p-2 md:p-3 rounded-xl ${selectedDepartment === dept ? 'bg-primary-500 text-white shadow-lg shadow-primary-200' : 'bg-slate-100 text-slate-400'}`}>
+                          {DEPARTMENT_ICONS[dept] || <Settings2 className="h-4 w-4 md:h-5 md:w-5" />}
                         </div>
-                        <span className={`font-bold ${selectedDepartment === dept ? 'text-primary-900' : 'text-slate-600'}`}>{dept}</span>
+                        <span className={`font-bold text-sm md:text-base ${selectedDepartment === dept ? 'text-primary-900' : 'text-slate-600'}`}>{dept}</span>
                       </button>
                     ))}
                   </div>
@@ -428,13 +430,13 @@ const ReportIssue = () => {
 
                   {/* Manual Issue Type Dropdown */}
                   <div className="space-y-4">
-                    <label htmlFor="manualIssueType" className="text-xl font-black text-slate-900 ml-2">Issue Type</label>
+                    <label htmlFor="manualIssueType" className="text-lg md:text-xl font-black text-slate-900 ml-2">Issue Type</label>
                     <div className="relative">
                       <select
                         id="manualIssueType"
                         value={manualIssueType}
                         onChange={(e) => setManualIssueType(e.target.value)}
-                        className="w-full bg-white border-2 border-slate-100 rounded-[2.5rem] p-8 text-lg font-medium text-slate-900 focus:ring-4 focus:ring-primary-50 outline-none shadow-sm appearance-none pr-12"
+                        className="w-full bg-white border-2 border-slate-100 rounded-[1.5rem] md:rounded-[2.5rem] p-6 md:p-8 text-base md:text-lg font-medium text-slate-900 focus:ring-4 focus:ring-primary-50 outline-none shadow-sm appearance-none pr-12"
                         required={isManualSelection}
                       >
                         <option value="" disabled>Select an issue type</option>
@@ -444,7 +446,7 @@ const ReportIssue = () => {
                         <option value="Water Log">Water Log</option>
                         <option value="Other">Other</option>
                       </select>
-                      <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 h-6 w-6 text-slate-400 pointer-events-none" />
+                      <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 text-slate-400 pointer-events-none" />
                     </div>
                   </div>
                 </div>
@@ -452,11 +454,11 @@ const ReportIssue = () => {
             )}
           </AnimatePresence>
 
-          <div className="grid lg:grid-cols-2 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
             {/* Image Upload Area */}
             <div className="space-y-4">
-              <label className="text-xl font-black text-slate-900 ml-2">Photo Proof</label>
-              <div className={`relative group aspect-square rounded-[2.5rem] border-4 border-dashed transition-all overflow-hidden ${image ? 'border-primary-500' : 'border-slate-200 hover:border-primary-400 bg-slate-50/50'}`}>
+              <label className="text-lg md:text-xl font-black text-slate-900 ml-2">Photo Proof</label>
+              <div className={`relative group aspect-[4/3] md:aspect-square rounded-[2rem] md:rounded-[2.5rem] border-4 border-dashed transition-all overflow-hidden ${image ? 'border-primary-500' : 'border-slate-200 hover:border-primary-400 bg-slate-50/50'}`}>
                 {image ? (
                   <>
                     <img src={image} alt="Preview" className="w-full h-full object-cover" />
@@ -464,19 +466,19 @@ const ReportIssue = () => {
                       <button 
                         type="button"
                         onClick={() => setImage(null)}
-                        className="bg-white/20 backdrop-blur-md text-white p-4 rounded-full hover:bg-white/30 transition-colors border border-white/30"
+                        className="bg-white/20 backdrop-blur-md text-white p-3 md:p-4 rounded-full hover:bg-white/30 transition-colors border border-white/30"
                       >
-                        <Trash2 className="h-6 w-6" />
+                        <Trash2 className="h-5 w-5 md:h-6 md:w-6" />
                       </button>
                     </div>
                   </>
                 ) : (
-                  <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer p-10 text-center">
-                    <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 mb-6 group-hover:scale-110 transition-transform border border-slate-50">
-                      <Camera className="h-12 w-12 text-primary-600" />
+                  <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer p-6 md:p-10 text-center">
+                    <div className="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-xl shadow-slate-200/50 mb-4 md:mb-6 group-hover:scale-110 transition-transform border border-slate-50">
+                      <Camera className="h-8 w-8 md:h-12 md:w-12 text-primary-600" />
                     </div>
-                    <p className="text-2xl font-black text-slate-900 tracking-tight">Snap or Upload</p>
-                    <p className="text-slate-400 font-medium mt-2">Clear photos help AI process faster</p>
+                    <p className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Snap or Upload</p>
+                    <p className="text-xs md:text-sm text-slate-400 font-medium mt-1 md:mt-2">Clear photos help AI process faster</p>
                     <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} required />
                   </label>
                 )}
@@ -484,18 +486,18 @@ const ReportIssue = () => {
             </div>
 
             {/* Details Area */}
-            <div className="space-y-10">
+            <div className="space-y-8 md:space-y-10">
               <div className="space-y-4">
-                <label className="text-xl font-black text-slate-900 ml-2">Description</label>
+                <label className="text-lg md:text-xl font-black text-slate-900 ml-2">Description</label>
                 <div className="relative">
                   <textarea
                     required
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Tell us what's happening..."
-                    className="w-full h-56 bg-white border-2 border-slate-100 rounded-[2.5rem] p-8 text-lg font-medium text-slate-900 focus:ring-4 focus:ring-primary-50 placeholder:text-slate-300 outline-none resize-none shadow-sm"
+                    className="w-full h-48 md:h-56 bg-white border-2 border-slate-100 rounded-[1.5rem] md:rounded-[2.5rem] p-6 md:p-8 text-base md:text-lg font-medium text-slate-900 focus:ring-4 focus:ring-primary-50 placeholder:text-slate-300 outline-none resize-none shadow-sm"
                   />
-                  <div className="absolute bottom-6 right-8 text-slate-300 font-bold text-sm uppercase tracking-widest">
+                  <div className="absolute bottom-4 right-6 md:bottom-6 md:right-8 text-slate-300 font-bold text-[10px] md:text-sm uppercase tracking-widest">
                     {description.length} chars
                   </div>
                 </div>
@@ -503,31 +505,32 @@ const ReportIssue = () => {
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between ml-2">
-                  <label className="text-xl font-black text-slate-900">Location Detection</label>
+                  <label className="text-lg md:text-xl font-black text-slate-900">Location Detection</label>
                   <button 
                     type="button"
                     onClick={requestLocation}
-                    className="flex items-center gap-2 text-xs font-black text-primary-600 uppercase tracking-widest hover:text-primary-700 transition-colors"
+                    className="flex items-center gap-2 text-[10px] md:text-xs font-black text-primary-600 uppercase tracking-widest hover:text-primary-700 transition-colors"
                   >
                     <Navigation className="h-3 w-3" />
                     Refresh
                   </button>
                 </div>
                 
-                <div className="bg-slate-900 rounded-[2.5rem] p-8 relative overflow-hidden h-72 shadow-2xl shadow-slate-300">
+                <div className="bg-slate-900 rounded-[2rem] md:rounded-[2.5rem] p-4 md:p-8 relative overflow-hidden h-64 md:h-72 shadow-2xl shadow-slate-300">
                   {locationStatus === 'loading' ? (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 z-20">
-                      <Loader2 className="h-10 w-10 text-primary-500 animate-spin mb-4" />
-                      <p className="text-primary-400 font-black uppercase tracking-widest text-xs">Fetching location...</p>
+                      <Loader2 className="h-8 w-8 md:h-10 md:w-10 text-primary-500 animate-spin mb-4" />
+                      <p className="text-primary-400 font-black uppercase tracking-widest text-[10px] md:text-xs">Fetching location...</p>
                     </div>
                   ) : locationStatus === 'error' ? (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 z-20 p-10 text-center">
-                      <AlertCircle className="h-10 w-10 text-red-500 mb-4" />
-                      <p className="text-white font-black text-sm uppercase tracking-wider mb-2">Location Denied</p>
-                      <p className="text-slate-400 text-xs leading-relaxed">Please enable location access in your browser to report an issue.</p>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 z-20 p-6 md:p-10 text-center">
+                      <AlertCircle className="h-8 w-8 md:h-10 md:w-10 text-red-500 mb-4" />
+                      <p className="text-white font-black text-xs md:text-sm uppercase tracking-wider mb-2">Location Denied</p>
+                      <p className="text-slate-400 text-[10px] md:text-xs leading-relaxed">Please enable location access in your browser to report an issue.</p>
                       <button 
+                        type="button"
                         onClick={requestLocation}
-                        className="mt-6 px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-black transition-all"
+                        className="mt-6 px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-[10px] md:text-xs font-black transition-all"
                       >
                         Try Again
                       </button>
@@ -541,25 +544,25 @@ const ReportIssue = () => {
                       <button 
                         type="button"
                         onClick={() => setIsMapFull(true)}
-                        className="absolute top-4 right-4 z-30 bg-white/90 backdrop-blur-md p-3 rounded-2xl shadow-xl border border-white/20 hover:bg-white transition-all group"
+                        className="absolute top-3 right-3 md:top-4 md:right-4 z-30 bg-white/90 backdrop-blur-md p-2 md:p-3 rounded-xl md:rounded-2xl shadow-xl border border-white/20 hover:bg-white transition-all group"
                         title="View Full Map"
                       >
-                        <Maximize2 className="h-5 w-5 text-slate-700 group-hover:scale-110 transition-transform" />
+                        <Maximize2 className="h-4 w-4 md:h-5 md:w-5 text-slate-700 group-hover:scale-110 transition-transform" />
                       </button>
                       
                       {/* Overlay Info */}
-                      <div className="absolute bottom-6 left-6 right-6 z-10">
-                        <div className="bg-slate-900/80 backdrop-blur-md p-6 rounded-3xl border border-white/10 flex items-center gap-5">
-                          <div className="bg-primary-500 p-3 rounded-2xl shadow-lg shadow-primary-500/20">
-                            <MapPin className="h-6 w-6 text-white" />
+                      <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 z-10">
+                        <div className="bg-slate-900/80 backdrop-blur-md p-4 md:p-6 rounded-2xl md:rounded-3xl border border-white/10 flex items-center gap-4 md:gap-5">
+                          <div className="bg-primary-500 p-2 md:p-3 rounded-xl md:rounded-2xl shadow-lg shadow-primary-500/20 shrink-0">
+                            <MapPin className="h-5 w-5 md:h-6 md:w-6 text-white" />
                           </div>
-                          <div>
-                            <p className="text-[10px] font-black text-primary-400 uppercase tracking-[0.2em] mb-1">Detected Coordinates</p>
-                            <p className="text-white font-black text-lg">
+                          <div className="min-w-0">
+                            <p className="text-[8px] md:text-[10px] font-black text-primary-400 uppercase tracking-[0.2em] mb-0.5 md:mb-1">Detected Coordinates</p>
+                            <p className="text-white font-black text-sm md:text-lg truncate">
                               {location.lat.toFixed(4)}° N, {location.lng.toFixed(4)}° E
                             </p>
-                            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 mt-1">
-                              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                            <p className="text-slate-400 text-[8px] md:text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 mt-0.5 md:mt-1">
+                              <span className="w-1 md:w-1.5 h-1 md:h-1.5 bg-green-500 rounded-full animate-pulse"></span>
                               Live Location Active
                             </p>
                           </div>
@@ -577,16 +580,16 @@ const ReportIssue = () => {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={isSubmitting || !image || (isManualSelection && !selectedDepartment)}
-            className={`w-full py-6 rounded-[2rem] font-black text-xl transition-all shadow-2xl flex items-center justify-center gap-4 ${isSubmitting ? 'bg-slate-100 text-slate-400' : isManualSelection ? 'bg-amber-600 text-white shadow-amber-200' : 'bg-primary-600 text-white shadow-primary-200'}`}
+            className={`w-full py-5 md:py-6 rounded-[1.5rem] md:rounded-[2rem] font-black text-lg md:text-xl transition-all shadow-2xl flex items-center justify-center gap-3 md:gap-4 ${isSubmitting ? 'bg-slate-100 text-slate-400' : isManualSelection ? 'bg-amber-600 text-white shadow-amber-200' : 'bg-primary-600 text-white shadow-primary-200'}`}
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <Loader2 className="h-6 w-6 md:h-8 md:w-8 animate-spin" />
                 {isManualSelection ? 'Finalizing...' : 'AI Processing...'}
               </>
             ) : (
               <>
-                <Upload className="h-7 w-7" />
+                <Upload className="h-6 w-6 md:h-7 md:w-7" />
                 {isManualSelection ? 'Confirm & Submit' : 'Submit for AI Scan'}
               </>
             )}
@@ -600,30 +603,32 @@ const ReportIssue = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[100] bg-slate-900/90 backdrop-blur-xl p-4 md:p-10 flex items-center justify-center"
+              className="fixed inset-0 z-[100] bg-slate-900/90 backdrop-blur-xl p-2 md:p-10 flex items-center justify-center"
             >
               <motion.div 
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white w-full max-w-6xl h-[80vh] rounded-[3rem] overflow-hidden relative shadow-2xl flex flex-col"
+                className="bg-white w-full max-w-6xl h-[90vh] md:h-[80vh] rounded-[2rem] md:rounded-[3rem] overflow-hidden relative shadow-2xl flex flex-col"
               >
                 {/* Modal Header */}
-                <div className="p-6 md:p-8 border-b border-slate-100 flex items-center justify-between bg-white z-10">
-                  <div>
-                    <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
-                      <div className="bg-primary-100 p-2 rounded-xl">
-                        <MapPin className="h-6 w-6 text-primary-600" />
+                <div className="p-4 md:p-8 border-b border-slate-100 flex items-center justify-between bg-white z-10">
+                  <div className="min-w-0">
+                    <h2 className="text-xl md:text-2xl font-black text-slate-900 flex items-center gap-2 md:gap-3">
+                      <div className="bg-primary-100 p-1.5 md:p-2 rounded-xl shrink-0">
+                        <MapPin className="h-5 w-5 md:h-6 md:w-6 text-primary-600" />
                       </div>
-                      Full Location View
+                      <span className="truncate">Full Location View</span>
                     </h2>
-                    <p className="text-slate-500 font-medium ml-12">Precise coordinates: {location.lat.toFixed(6)}°, {location.lng.toFixed(6)}°</p>
+                    <p className="text-slate-500 text-xs md:text-sm font-medium ml-10 md:ml-12 truncate">
+                      {location.lat.toFixed(6)}°, {location.lng.toFixed(6)}°
+                    </p>
                   </div>
                   <button 
                     onClick={() => setIsMapFull(false)}
-                    className="p-4 bg-slate-100 rounded-2xl hover:bg-slate-200 transition-all group"
+                    className="p-3 md:p-4 bg-slate-100 rounded-xl md:rounded-2xl hover:bg-slate-200 transition-all group shrink-0"
                   >
-                    <X className="h-6 w-6 text-slate-600 group-hover:rotate-90 transition-transform" />
+                    <X className="h-5 w-5 md:h-6 md:w-6 text-slate-600 group-hover:rotate-90 transition-transform" />
                   </button>
                 </div>
 
@@ -637,13 +642,13 @@ const ReportIssue = () => {
                   />
                   
                   {/* Floating Location Tag */}
-                  <div className="absolute bottom-10 left-10 z-20">
-                    <div className="bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl border border-white/10 shadow-2xl">
-                      <div className="flex items-center gap-4">
-                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(34,197,94,0.6)]"></div>
+                  <div className="absolute bottom-4 left-4 md:bottom-10 md:left-10 z-20">
+                    <div className="bg-slate-900/90 backdrop-blur-md p-4 md:p-6 rounded-2xl md:rounded-3xl border border-white/10 shadow-2xl">
+                      <div className="flex items-center gap-3 md:gap-4">
+                        <div className="w-2 h-2 md:w-3 md:h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(34,197,94,0.6)]"></div>
                         <div>
-                          <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest">System Status</p>
-                          <p className="text-white font-black">Live Tracking Active</p>
+                          <p className="text-[8px] md:text-[10px] font-black text-primary-400 uppercase tracking-widest">System Status</p>
+                          <p className="text-white text-xs md:text-base font-black">Live Tracking Active</p>
                         </div>
                       </div>
                     </div>
@@ -651,10 +656,10 @@ const ReportIssue = () => {
                 </div>
 
                 {/* Modal Footer */}
-                <div className="p-8 bg-slate-50 border-t border-slate-100 flex justify-end">
+                <div className="p-4 md:p-8 bg-slate-50 border-t border-slate-100 flex justify-end">
                   <button 
                     onClick={() => setIsMapFull(false)}
-                    className="px-10 py-4 bg-slate-900 text-white rounded-2xl font-black hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
+                    className="w-full md:w-auto px-10 py-4 bg-slate-900 text-white rounded-xl md:rounded-2xl font-black hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
                   >
                     Close Preview
                   </button>

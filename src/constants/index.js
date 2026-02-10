@@ -17,6 +17,19 @@ export const ISSUE_STATUS = {
   RESOLVED: 'resolved',
 };
 
+export const NAV_LINKS = {
+  [ROLES.CITIZEN]: [
+    { to: '/citizen/dashboard', label: 'Dashboard', icon: 'LayoutDashboard' },
+    { to: '/citizen/report', label: 'Report Issue', icon: 'PlusCircle' },
+    { to: '/citizen/my-issues', label: 'My Issues', icon: 'ClipboardList' },
+  ],
+  [ROLES.HEAD_AUTHORITY]: [
+    { to: '/head-authority/dashboard', label: 'Global Overview', icon: 'LayoutDashboard' },
+    { to: '/head-authority/management', label: 'Issue Management', icon: 'ShieldCheck' },
+    { to: '/head-authority/departments', label: 'Departments', icon: 'Users' },
+  ],
+};
+
 export const MOCK_ISSUES = [
   {
     id: '1',

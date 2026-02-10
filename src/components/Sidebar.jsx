@@ -13,27 +13,21 @@ import {
   HelpCircle,
   Bell
 } from 'lucide-react';
-import { ROLES } from '../constants';
+import { ROLES, NAV_LINKS } from '../constants';
 import { cn } from '../utils/cn';
+
+const ICON_MAP = {
+  LayoutDashboard,
+  PlusCircle,
+  ClipboardList,
+  ShieldCheck,
+  Users,
+};
 
 const Sidebar = ({ role }) => {
   const location = useLocation();
 
-  const citizenLinks = [
-    { to: '/citizen/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/citizen/report', icon: PlusCircle, label: 'Report Issue' },
-    { to: '/citizen/my-issues', icon: ClipboardList, label: 'My Issues' },
-  ];
-
-  const headAuthorityLinks = [
-    { to: '/head-authority/dashboard', icon: LayoutDashboard, label: 'Global Overview' },
-    { to: '/head-authority/management', icon: ShieldCheck, label: 'Issue Management' },
-    { to: '/head-authority/departments', icon: Users, label: 'Departments' },
-  ];
-
-  const links = role === ROLES.CITIZEN 
-    ? citizenLinks 
-    : headAuthorityLinks;
+  const links = NAV_LINKS[role] || [];
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-72 bg-white border-r border-slate-100 hidden md:flex flex-col z-50">
@@ -59,6 +53,7 @@ const Sidebar = ({ role }) => {
         </p>
         
         {links.map((link) => {
+          const Icon = ICON_MAP[link.icon];
           const isActive = location.pathname === link.to;
           return (
             <NavLink
@@ -85,7 +80,7 @@ const Sidebar = ({ role }) => {
                 "relative z-10 p-2 rounded-xl transition-colors duration-300",
                 isActive ? "bg-white shadow-sm text-primary-600" : "bg-transparent group-hover:bg-white group-hover:shadow-sm"
               )}>
-                <link.icon className="h-5 w-5" />
+                {Icon && <Icon className="h-5 w-5" />}
               </div>
               
               <span className="relative z-10 text-sm tracking-tight">{link.label}</span>
